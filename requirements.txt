@@ -1,0 +1,13 @@
+deepagents 
+langgraph
+langchain 
+langchain-community
+langchain-core
+langchain-openai
+langchainhub
+langsmith
+pydantic
+python-dotenv
+pandas
+numpy
+langchain-google-genai
