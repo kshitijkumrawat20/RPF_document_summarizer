@@ -12,3 +12,7 @@ pandas
 numpy
 langchain-google-genai
 langchain-docling
+tavily-python
+markdownify
+streamlit
+docling
