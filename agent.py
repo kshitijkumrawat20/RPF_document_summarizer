@@ -56,10 +56,25 @@ pricing_subagent = {
     "system_prompt": PRICING_AGENT_INSTRUCTIONS,
     "tools": [get_price, get_all_products]
 }
-# Model Gemini 3 
+# Model Gemini 3
 # model = ChatGoogleGenerativeAI(model="gemini-3-pro-preview", temperature=0.0)
 
 # Model Claude 4.5
+from deepagents.backends import CompositeBackend, StateBackend, FilesystemBackend
+import os
+
+# Define the backend factory
+def backend_factory(rt):
+    # Ensure local directory exists
+    os.makedirs("./agent_memories", exist_ok=True)
+    
+    return CompositeBackend(
+        default=StateBackend(rt),
+        routes={
+            # Persist /memories/ to local disk
+            "/memories/": FilesystemBackend(root_dir=os.path.abspath("./agent_memories"), virtual_mode=True),
+        }
+    )
 
 from langchain_openai import ChatOpenAI
 from os import getenv
@@ -68,16 +83,24 @@ from dotenv import load_dotenv
 load_dotenv()
 
 model = ChatOpenAI(
-    api_key=getenv("OPENROUTER_API_KEY"),
-    base_url="https://openrouter.ai/api/v1",
-    model="mistralai/devstral-2512:free"
+    api_key=getenv("OPENAI_API_KEY"),
+    # base_url="https://openrouter.ai/api/v1",
+    model="gpt-4o-mini"
 )
+# from langchain_groq import ChatGroq
+# model = ChatGroq(
+#     model="openai/gpt-oss-120b",
+#     api_key=getenv("GROQ_API_KEY")
+# )
 # model = init_chat_model(model="anthropic:claude-sonnet-4-5-20250929", temperature=0.0)
+import os
+# model = ChatGoogleGenerativeAI(model="models/gemini-2.5-flash", api_key=os.getenv("GEMINI_API_KEY"))
 
 # Create the agent
 agent = create_deep_agent(
     model=model,
-    tools=[get_pending_rfps, docling_convert, get_all_products, get_price, tavily_search, think_tool],
+    tools=[think_tool],
     system_prompt=IINSTRUCTIONS,
     subagents=[sales_subagent, technical_subagent, pricing_subagent],
+    backend=backend_factory, # Use the custom backend
 )

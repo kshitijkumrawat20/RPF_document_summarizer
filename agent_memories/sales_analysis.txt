@@ -1,0 +1,25 @@
+# Sales Analysis of RFP
+
+## RFP Overview
+- **Due Date**: 20-12-2025
+- **Source**: [RFP Document](https://drive.google.com/uc?export=download&id=1rme2gd0GoWmuD-TnC81nHHapL1FNWFG5)
+
+## Key Details
+### Project Scope
+The project involves [insert project scope description].
+
+### Submission Guidelines
+- Proposals must be submitted by the due date.
+- Required documents include:
+  - Company background
+  - Detailed project plan
+  - Budget estimate
+
+### Evaluation Criteria
+Proposals will be evaluated based on:
+1. Experience
+2. Capability
+3. Cost effectiveness
+
+## Conclusion
+The evaluation will focus on relevant experience, capabilities to deliver, and cost effectiveness. Careful consideration should be given to prepare a compelling proposal.

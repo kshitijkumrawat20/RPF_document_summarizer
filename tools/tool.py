@@ -147,42 +147,52 @@ def get_pending_rfps() -> str:
     """Returns a list of RFPs due in next 3 months from the document repository."""
     # For demonstration, returning a static list
 
-    pending_rfps = [{"source":"https://drive.google.com/uc?export=download&id=1pVqPmP_dQxXaOVrJA48Zzg8NP5oem-i_", "due_date":"20-12-2025", "status": "open"}]
+    pending_rfps = [{"source":"https://drive.google.com/uc?export=download&id=1rme2gd0GoWmuD-TnC81nHHapL1FNWFG5", "due_date":"20-12-2025", "status": "open"}]
 
     return str(pending_rfps)
 
 
+import os
+import hashlib
+from pathlib import Path
+from docling.document_converter import DocumentConverter
+from langchain_core.tools import tool
+
 @tool
 def docling_convert(source: str) -> str:
-    """Convert PDF/document to markdown and SAVE to filesystem.
+    """Convert PDF/document to markdown and SAVE to memory.
     
     Args:
         source: URL or file path
         
-    Returns: FILENAME where markdown is saved (use read_file to access content)
+    Returns: The path where the file was saved.
     """
     try:
+        # 1. Convert
         converter = DocumentConverter()
         result = converter.convert(source)
         markdown = result.document.export_to_markdown()
-        print(markdown)
-        ## save the markdown to file 
-        return markdown
-        # # Create unique filename in agent's workspace
-        # filename = f"/research/doc_{Path(source).stem}.md"
         
-        # # Agent will call write_file(filename, markdown) next
-        # # Return ONLY filename to keep context tiny
-        # return f"SAVED: {filename}\n(Use read_file('{filename}') to access full content)"
+        # 2. Generate a safe filename
+        # Use a hash or original stem to ensure valid filename
+        if source.startswith("http"):
+             name = hashlib.md5(source.encode()).hexdigest()[:8]
+        else:
+             name = Path(source).stem
+             
+        filename = f"doc_{name}.md"
+        
+        # 3. Save to physical location (./agent_memories)
+        # We configured agent.py to map /memories/ -> ./agent_memories
+        physical_dir = "./agent_memories"
+        os.makedirs(physical_dir, exist_ok=True)
+        physical_path = os.path.join(physical_dir, filename)
+        
+        with open(physical_path, "w", encoding="utf-8") as f:
+            f.write(markdown)
+            
+        # 4. Return the VIRTUAL path to the agent
+        return f"SAVED to /memories/{filename}\n(Use read_file('/memories/{filename}') to access content)"
         
     except Exception as e:
         return f"ERROR: {str(e)}"
-    # try:
-    #     converter = DocumentConverter()
-    #     result = converter.convert(source)
-    #     markdown = result.document.export_to_markdown()
-    #     doc_id = hashlib.md5(source.encode()).hexdigest()[:8]
-    #     filename = f"/research/rfp_{doc_id}.md"
-    #     return f"✅ SAVED: {filename}\n📏 {len(markdown)} chars\n➡️ read_file('{filename}')"
-    # except Exception as e:
-    #     return f"❌ ERROR: {str(e)}"

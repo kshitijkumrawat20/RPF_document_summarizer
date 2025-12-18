@@ -8,3 +8,6 @@ Application flow.md
 .venv
 artifacts/
 approach.md
+deep_agents.md
+backends.md
+st_app.py 
